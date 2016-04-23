@@ -7,4 +7,5 @@ var cabinSchema = new mongoose.Schema(
 	 taxes: [{category: String, value: Number}]
 	}
 	);
+
 module.exports = mongoose.model('cabins', cabinSchema);

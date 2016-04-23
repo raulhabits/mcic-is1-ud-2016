@@ -16,8 +16,9 @@ app.engine('html', require('hogan-express'));
 app.set('view engine', 'html');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
+
 app.use(session({secret: config.token, saveUninitialized: true, resave: true}));
 
 
