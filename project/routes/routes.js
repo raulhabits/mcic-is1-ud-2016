@@ -1,20 +1,13 @@
-module.exports = function (express, app, mongoose){
+module.exports = function (express, app){
 	var router = express.Router();
-	var User = require('./../models/user.js');
-	var Cabins = require('./../models/cabins.js');
-	var Route = require('./../models/route.js');
-	var Vehicles = require('./../models/vehicle.js');
-	var Rates = require('./../models/rate.js');
 	var qr = require('qr-image');
 
-	require('./service.js')(router, mongoose, User, Cabins, Route, Vehicles, Rates);
-	require('./userOperations.js')(router, mongoose, User, Vehicles, Rates);
+	require('./service.js')(router);
+	require('./userOperations.js')(router);
 
 	router.get('/', function (req, res, next){
 		res.render('login');
 	})	
-
-
 
 	router.get('/login', function (req, res, next) {
 		res.render('login', {});

@@ -2,6 +2,10 @@ module.exports = function (router, mongoose, User, Vehicles, Rates){
 	var successHeader = "SUCCESS";
 	var errorHeader = "ERROR";
 
+	User = require('./../models/user.js');
+	Vehicles = require('./../models/vehicle.js');
+	Rates = require('./../models/rate.js');
+
 	function loginUserService (req, res, next) {
 		var email = req.body.email;
 		var password = req.body.password;
@@ -64,13 +68,17 @@ module.exports = function (router, mongoose, User, Vehicles, Rates){
 	}
 
 	function getPayments (req, res, next) {
-		Rates.find({'vehicle.user._id': req.session.user._id, paymentStatus: req.query.paymentStatus}, null, {sort: {date:-1}}, function (err, doc) {
-			if (err) {
-					res.json({result : errorHeader, message : err});
-			} else {
-				res.json({result : successHeader, content : doc});
-			}			
-		});
+		if (!req.session.user) {
+			res.json({result : errorHeader, message : "User not logged in"});
+		} else {
+			Rates.find({'vehicle.user._id': req.session.user._id, paymentStatus: req.query.paymentStatus}, null, {sort: {date:-1}}, function (err, doc) {
+				if (err) {
+						res.json({result : errorHeader, message : err});
+				} else {
+					res.json({result : successHeader, content : doc});
+				}			
+			});
+		}		
 	}
 
 

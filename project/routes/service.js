@@ -1,4 +1,4 @@
-module.exports = function (router, mongoose, User, Cabins, Route, Vehicles, Rates){
+module.exports = function (router) {
 
 	var successHeader = "SUCCESS";
 	var errorHeader = "ERROR";
@@ -7,19 +7,19 @@ module.exports = function (router, mongoose, User, Cabins, Route, Vehicles, Rate
 		var model;
 		switch(name){
 			case 'users':
-				model = User;
+				model = require('./../models/user.js');
 				break;
 			case 'cabins':
-				model = Cabins;
+				model = require('./../models/cabins.js');
 				break;
 			case 'vehicles':
-				model = Vehicles;
+				model = require('./../models/vehicle.js');
 				break;
 			case 'rates':
-				model = Rates;
+				model = require('./../models/rate.js');
 				break;
 			case 'route':
-				model = Route;
+				model = require('./../models/route.js');
 				break;
 			default: 
 				model= null;
@@ -43,7 +43,8 @@ module.exports = function (router, mongoose, User, Cabins, Route, Vehicles, Rate
 		if (undefined == req.body.idVehicle) {
 			next();
 		} else {
-			Vehicles.findOne({id : req.body.idVehicle}, function (err, vehicle){
+			var Model = selectModel('vehicles');
+			Model.findOne({id : req.body.idVehicle}, function (err, vehicle){
 				if (err) {
 					res.json({result : errorHeader, message : err});
 				} else {
@@ -63,7 +64,8 @@ module.exports = function (router, mongoose, User, Cabins, Route, Vehicles, Rate
 		if (undefined == req.body.idCabin) {
 			next();
 		} else {
-			Cabins.findOne({_id : req.body.idCabin}, function (err, cabin) {
+			var Model = selectModel('cabins');
+			Model.findOne({_id : req.body.idCabin}, function (err, cabin) {
 				if (err) {
 					res.json({result : errorHeader, message : err});
 				} else {
@@ -85,15 +87,16 @@ module.exports = function (router, mongoose, User, Cabins, Route, Vehicles, Rate
 		if (undefined != req.body.tax) {
 			next();
 		} else {
-			Cabins.find({_id : cabin._id, 'taxes.category' : vehicle.category},
+			Model = selectModel('cabins');
+			Model.find({_id : cabin._id, 'taxes.category' : vehicle.category},
 						{"_id" : 0, "taxes.$" : 1}, function (err, data) {
 				if (err) {
 					res.json({result : errorHeader, message : err});
 				} else {
-					if (data) {console.log(data);
-						data.taxes = JSON.parse(JSON.stringify(data[0]));
+					if (data) {
+					data.taxes = JSON.parse(JSON.stringify(data[0]));
 					req.body.tax = data[0].taxes[0].value;
-					console.log(req.body.tax);
+					
 				 	next();	
 					} else {
 						res.json({result : errorHeader, message : "No data found"});
@@ -108,7 +111,8 @@ module.exports = function (router, mongoose, User, Cabins, Route, Vehicles, Rate
 		
 		var vehicle = JSON.parse(JSON.stringify(req.body.vehicle));
 		var tax = req.body.tax;
-		var rate = new Rates({
+		var Model = selectModel('rates');
+		var rate = new Model({
 		 	cabin : cabin, 
 			vehicle : vehicle, 
 			date : new Date(),

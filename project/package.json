@@ -10,14 +10,21 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "body-parser": "~1.15.0",
+    "chai": "^3.5.0",
+    "chai-http": "^2.0.1",
     "connect-mongo": "~1.1.0",
     "cookie-parser": "~1.4.1",
     "express": "~4.13.4",
     "express-qrcode": "~1.0.0",
     "express-session": "~1.13.0",
     "hogan-express": "~0.5.2",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.4.5",
     "mongoose": "~4.4.10",
+    "node-mocks-http": "^1.5.2",
     "qr-image": "~3.1.0",
-    "socket.io": "^1.4.5"
+    "should": "^8.3.1",
+    "socket.io": "^1.4.5",
+    "supertest": "^1.2.0"
   }
 }
