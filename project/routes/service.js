@@ -156,7 +156,7 @@ module.exports = function (router) {
 	}
 
 	router.get('/service/:tableName/', getAll);
-
+        router.post('/web/:tableName/', getAll);
 	//router.post('/service/:tableName/', addOne, setupConfigurationRate, registerRate);
 	router.post('/service/:tableName/', addOne, searchVehicle, searchCabin, searchTaxModel, insertRate);
 
