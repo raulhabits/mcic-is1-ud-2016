@@ -1,5 +1,8 @@
 module.exports = function (router) {
 
+	var config = require('./../config/config.js');
+	var sendgrid  = require('sendgrid')(config.apiKeyMessage);
+
 	var successHeader = "SUCCESS";
 	var errorHeader = "ERROR";
 
@@ -30,6 +33,7 @@ module.exports = function (router) {
 
 	function getAll (req, res, next){
 		var model = selectModel(req.params.tableName);
+		
 		model.find(function (err, doc) {
 			if (err) {
 					res.json({result : errorHeader, message : err});
@@ -108,7 +112,6 @@ module.exports = function (router) {
 
 	function insertRate (req, res, next) {
 		var cabin = JSON.parse(JSON.stringify(req.body.cabin));
-		
 		var vehicle = JSON.parse(JSON.stringify(req.body.vehicle));
 		var tax = req.body.tax;
 		var Model = selectModel('rates');
@@ -119,13 +122,24 @@ module.exports = function (router) {
 			paymentStatus : 0,
 			value : tax
 		});
-		rate.save(function (err) {
-			if (err) {
-				res.json({result : errorHeader, message : err});
-			} else {
-				res.json({result : successHeader, message : "Inserted correctly"});
-			}			
-		});
+
+		if (vehicle.stolen=="checked") {
+			sendEmail("Vehicle Stolen", config.policeEmail, {vehicle:vehicle, cabin:cabin, date:new Date()});
+			res.json({result : errorHeader, message : "Vehicle stolen"});
+		}
+		else if (vehicle.active!="checked") {
+			sendEmail("Vehicle Inactive", config.policeEmail, {vehicle:vehicle, cabin:cabin});
+			res.json({result : errorHeader, message : "Vehicle inactive"});
+		} else {
+			rate.save(function (err) {
+				if (err) {
+					res.json({result : errorHeader, message : err});
+				} else {
+					res.json({result : successHeader, message : "Inserted correctly"});
+					sendEmail("Rate Inserted", vehicle.user.email, {vehicle:vehicle, cabin:cabin, date:new Date()});
+				}			
+			});	
+		}		
 	}
 
 	function addOne(req, res, next){
@@ -155,9 +169,40 @@ module.exports = function (router) {
 		});
 	}
 
+	function update (req, res, next) {
+		var model = selectModel(req.params.tableName);
+		var filter = req.body.filter;
+		var data = req.body.data;
+		model.update(filter,{'$set': data}, function (error, doc) {
+			if (error) {
+				res.json({result : errorHeader, message: "The operation can't be completed"});
+			}
+			else {
+				if (doc) {
+					res.json({result : successHeader, content: doc});	
+				} else {
+					res.json({result : errorHeader, content: "There's not a match between filters"});	
+				}
+			}
+		});
+	}
+
+	function sendEmail(title, email, data){
+		sendgrid.send({
+		  to:       email,
+		  from:     'other@example.com',
+		  subject:  title,
+		  text:     JSON.stringify(data)
+		}, function(err, json) {
+		  if (err) { return console.error(err); }
+		  console.log(json);
+		});
+	}
+
 	router.get('/service/:tableName/', getAll);
 
-	//router.post('/service/:tableName/', addOne, setupConfigurationRate, registerRate);
+	router.post('/service/:tableName/update', update);
+
 	router.post('/service/:tableName/', addOne, searchVehicle, searchCabin, searchTaxModel, insertRate);
 
 	router.get('/service/:tableName/:_id', findById);
@@ -168,5 +213,4 @@ module.exports = function (router) {
 		});		
 	})
 	
-
 }
