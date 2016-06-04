@@ -20,7 +20,7 @@ module.exports = function (express, app) {
     router.get('/user/qr/:_id', function (req, res, next) {
         var code = qr.image(req.params._id, {type: 'png', size: 5});
         res.setHeader('Content-type', 'image/png');
-	code.pipe(res);
+        code.pipe(res);
     });
 
     app.use('/', router);
