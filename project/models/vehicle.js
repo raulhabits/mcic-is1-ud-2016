@@ -5,7 +5,9 @@ var vehicleSchema = new mongoose.Schema(
 	 color: String,
 	 model: String,
 	 brand: String,
-	 category: String,
+	 category: String,	 
+	 active: String,
+	 stolen: String,
 	 user: mongoose.Schema.Types.Mixed
 	}
 	);

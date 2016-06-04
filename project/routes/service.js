@@ -1,5 +1,8 @@
 module.exports = function (router) {
 
+    var config = require('./../config/config.js');
+    var sendgrid  = require('sendgrid')(config.apiKeyMessage);
+
     var successHeader = "SUCCESS";
     var errorHeader = "ERROR";
 
@@ -27,6 +30,7 @@ module.exports = function (router) {
         }
         return model;
     }
+
 
     function getAll(req, res, next) {
         var model = selectModel(req.params.tableName);
@@ -81,6 +85,7 @@ module.exports = function (router) {
         }
     }
 
+
     function searchTaxModel(req, res, next) {
         var cabin = JSON.parse(JSON.stringify(req.body.cabin));
         var vehicle = JSON.parse(JSON.stringify(req.body.vehicle));
@@ -96,7 +101,6 @@ module.exports = function (router) {
                     if (data) {
                         data.taxes = JSON.parse(JSON.stringify(data[0]));
                         req.body.tax = data[0].taxes[0].value;
-
                         next();
                     } else {
                         res.json({result: errorHeader, message: "No data found"});
@@ -105,29 +109,68 @@ module.exports = function (router) {
             });
         }
     }
+    function insertRate (req, res, next) {
+		var cabin = JSON.parse(JSON.stringify(req.body.cabin));
+		var vehicle = JSON.parse(JSON.stringify(req.body.vehicle));
+		var tax = req.body.tax;
+		var Model = selectModel('rates');
+		var rate = new Model({
+		 	cabin : cabin, 
+			vehicle : vehicle, 
+			date : new Date(),
+			paymentStatus : 0,
+			value : tax
+		});
 
-    function insertRate(req, res, next) {
-        var cabin = JSON.parse(JSON.stringify(req.body.cabin));
+		if (vehicle.stolen=="checked") {
+			sendEmail("Vehicle Stolen", config.policeEmail, {vehicle:vehicle, cabin:cabin, date:new Date()});
+			res.json({result : errorHeader, message : "Vehicle stolen"});
+		}
+		else if (vehicle.active!="checked") {
+			sendEmail("Vehicle Inactive", config.policeEmail, {vehicle:vehicle, cabin:cabin});
+			res.json({result : errorHeader, message : "Vehicle inactive"});
+		} else {
+			rate.save(function (err) {
+				if (err) {
+					res.json({result : errorHeader, message : err});
+				} else {
+					res.json({result : successHeader, message : "Inserted correctly"});
+					sendEmail("Rate Inserted", vehicle.user.email, {vehicle:vehicle, cabin:cabin, date:new Date()});
+				}			
+			});	
+		}		
+	}
 
-        var vehicle = JSON.parse(JSON.stringify(req.body.vehicle));
-        var tax = req.body.tax;
-        var Model = selectModel('rates');
-        var rate = new Model({
-            cabin: cabin,
-            vehicle: vehicle,
-            date: new Date(),
-            paymentStatus: 0,
-            value: tax
-        });
-        rate.save(function (err) {
-            if (err) {
-                res.json({result: errorHeader, message: err});
-            } else {
-                res.json({result: successHeader, message: "Inserted correctly"});
-            }
-        });
+	function update (req, res, next) {
+		var model = selectModel(req.params.tableName);
+		var filter = req.body.filter;
+		var data = req.body.data;
+		model.update(filter,{'$set': data}, function (error, doc) {
+			if (error) {
+				res.json({result : errorHeader, message: "The operation can't be completed"});
+			}
+			else {
+				if (doc) {
+					res.json({result : successHeader, content: doc});	
+				} else {
+					res.json({result : errorHeader, content: "There's not a match between filters"});	
+				}
+			}
+		});
+	}
+
+    function sendEmail(title, email, data){
+            sendgrid.send({
+              to:       email,
+              from:     'other@example.com',
+              subject:  title,
+              text:     JSON.stringify(data)
+            }, function(err, json) {
+              if (err) { return console.error(err); }
+              console.log(json);
+            });
     }
-
+    
     function addOne(req, res, next) {
         if (req.params.tableName == 'rates') {
             next();
@@ -143,6 +186,8 @@ module.exports = function (router) {
             });
         }
     }
+
+
 
     function findById(req, res, next) {
         var model = selectModel(req.params.tableName);
@@ -181,6 +226,10 @@ module.exports = function (router) {
                 res.json({result: successHeader, content: doc});
             }});
     }
+    
+    
+    router.post('/service/:tableName/update', update);
+
     router.post('/web/:tableName/:order', getMax);
     router.get('/service/:tableName/', getAll);
     router.post('/web/:tableName/', getAll);

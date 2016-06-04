@@ -1,4 +1,6 @@
 {
 	"dbUrl": "mongodb://localhost/mcic-is-1",
-	"token": "123456890"
+	"token": "123456890",
+	"apiKeyMessage": "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",
+	"emailPolice":"raulhabits@gmail.com"
 }

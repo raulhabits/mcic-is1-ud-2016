@@ -5,7 +5,7 @@ var should = require('should');
 var httpMocks =  require('node-mocks-http');
 var request = require('supertest');  
 var app = require('./../app.js');
-var url = 'http://localhost:3000';
+var url = 'http://localhost:3001';
 
 describe('Unit tests', function () {
 	it('Launch unit test', function () {
