@@ -36,7 +36,7 @@
                 </div>
                 <div class="row">
                     <a href="#" class="btn btn-success btn-update-profile">Update Details</a>       
-            </div>
+                </div>
                 <div class="row">
 
                     {{#lastRate}}
@@ -69,10 +69,8 @@
                         </div>
                     </div>
                     {{/lastRate}}  
-
-                </div>
-
             </div>
+        </div>
         </div>
         <div class="col-md-8 padding">
             <div id="tabs" class="form-login">
@@ -86,58 +84,67 @@
                 <p>In this section you can check your vehicles.</p>
                 <div class="items">
                     {{#vehicles}}
-                        <div class="item form-login">
-                            <div class="row">
-                                <label>Brand:</label> {{brand}}
-                            </div>
-                            <div class="row">
-                                <label>Model:</label> {{model}}
-                            </div>                    
-                            <div class="row">
-                                <label>Color:</label> 
-                                <input value="{{color}}" class="color" type="text" id="color-{{_id}}"/>
-                            </div>
-                            <div class="row">
-                                <input class="car-active" type="checkbox" {{active}} id="actived-{{_id}}"/>
-                                <label>Active</label>                                 
-                            </div>
-                            <div class="row">
-                                <input class="car-stolen" type="checkbox" {{stolen}} id="stolen-{{_id}}"/>
-                                <label>Stolen</label>                                 
-                            </div>
-                            <div class="row">
-                                <label>Id:</label> {{id}}
-                            </div>
-                            <div class="row">
-                                <label>Category:</label> {{category}}
-                            </div>
+                        <div class="item form-login row ">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <label>Brand:</label> {{brand}}
+                                </div>
+                                <div class="row">
+                                    <label>Model:</label> {{model}}
+                                </div>                    
+                                <div class="row">
+                                    <label>Color:</label> 
+                                    <input value="{{color}}" class="color" type="text" id="color-{{_id}}"/>
+                                </div>
+                                <div class="row">
+                                    <input class="car-active" type="checkbox" {{active}} id="actived-{{_id}}"/>
+                                    <label>Active</label>                                 
+                                </div>
+                                <div class="row">
+                                    <input class="car-stolen" type="checkbox" {{stolen}} id="stolen-{{_id}}"/>
+                                    <label>Stolen</label>                                 
+                                </div>
+                                <div class="row">
+                                    <label>Id:</label> {{id}}
+                                </div>
+                                <div class="row">
+                                    <label>Category:</label> {{category}}
+                                </div>
 
-                            <div class="row">
-                             <div class="right">
-                              <a href="#" class="btn btn-success btn-update-vehicle" id="update-{{_id}}">
-                               Update
-                              </a>
-                             </div>
-                            </div>
+                                <div class="row">
+                                 <div class="right">
+                                  <a href="#" class="btn btn-success btn-update-vehicle" id="update-{{_id}}">
+                                   Update
+                                  </a>
+                                 </div>
+                                </div>
 
-                            <div class="row">
-                                <label>Sell to:</label> 
-                                <select id="car-select-{{_id}}">
-                                {{#users}}
-                                <option value="{{_id}}">{{name}} | {{id}}</option>
-                                {{/users}}
-                                </select>
-                            </div>                            
-                            <div class="row">
-                             <div class="right">
-                              <a href="#" class="btn btn-success btn-sell-vehicle" id="sell-{{_id}}">
-                               Sell vehicle
-                              </a>
-                             </div>
+
+                                <div class="row">
+                                    <label>Sell to:</label> 
+                                    <select id="car-select-{{_id}}">
+                                    {{#users}}
+                                    <option value="{{_id}}">{{name}} | {{id}}</option>
+                                    {{/users}}
+                                    </select>
+                                </div>                            
+                                <div class="row">
+                                 <div class="right">
+                                  <a href="#" class="btn btn-success btn-sell-vehicle" id="sell-{{_id}}">
+                                   Sell vehicle
+                                  </a>
+                                 </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-md-4">
+                                <div class="row" >
+                                    <img src="/user/qr/{{id}}" alt="QR">
+                                </div>
+                            </div>
+                         </div>   
+
                     {{/vehicles}}    
-                </div>                    
+                                
               </div>
 
               <div id="tabs-2">

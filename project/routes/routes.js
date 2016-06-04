@@ -1,29 +1,29 @@
-module.exports = function (express, app){
-	var router = express.Router();
-	var qr = require('qr-image');
+module.exports = function (express, app) {
+    var router = express.Router();
+    var qr = require('qr-image');
 
-	require('./service.js')(router);
-	require('./userOperations.js')(router);
+    require('./service.js')(router);
+    require('./userOperations.js')(router);
 
-	router.get('/', function (req, res, next){
-		res.render('login');
-	})	
+    router.get('/', function (req, res, next) {
+        res.render('login');
+    })
 
-	router.get('/login', function (req, res, next) {
-		res.render('login', {});
-	});
+    router.get('/login', function (req, res, next) {
+        res.render('login', {});
+    });
 
-	router.get('/logout', function (req, res, next) {
-		req.session.destroy();
-	});
-	
-	router.get('/user/qr/:_id', function (req, res, next){
-	var code = qr.image(req.params._id, { type: 'svg' });
-	res.type('svg');
-	code.pipe(res);
-	})
+    router.get('/logout', function (req, res, next) {
+        req.session.destroy();
+    });
 
-	app.use('/', router);
+    router.get('/user/qr/:_id', function (req, res, next) {
+        var code = qr.image(req.params._id, {type: 'png', size: 5});
+        res.setHeader('Content-type', 'image/png');
+        code.pipe(res);
+    });
+
+    app.use('/', router);
 }
 
 
